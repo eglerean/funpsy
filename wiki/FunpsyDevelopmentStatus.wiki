@@ -4,9 +4,9 @@ Working code to generate IPS, SBPS with optimum filtering and complete data mana
 
 == Next in the pipeline (ETA August 2012) ==
 
-* Add extensive documentation (as PDF)
-* Expand analysis features (SVPS, ISBPS, more parallelized computing)
-* Add atlases for ROIs (AAL)
+# Add extensive documentation (as PDF)
+# Expand analysis features (SVPS, ISBPS, more parallelized computing)
+# Add atlases for ROIs (AAL)
 
 == Future ==
-* Python version of the code
+Python version of the code

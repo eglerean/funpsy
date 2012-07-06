@@ -1,6 +1,6 @@
 = Status of current development =
 
-July 2012 -  Done: working code to generate IPS, SBPS with optimum filtering and complete data managing.
+Working code to generate IPS, SBPS with optimum filtering and complete data managing (last updated July 2012)
 
 == Next in the pipeline (ETA August 2012) ==
 

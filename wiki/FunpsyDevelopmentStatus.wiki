@@ -1,0 +1,14 @@
+#status of funpsy development
+
+= Status of current development =
+
+July 2012 -  Done: working code to generate IPS, SBPS with optimum filtering and complete data managing.
+
+= Next in the pipeline (ETA August 2012) =
+
+* Add extensive documentation (as PDF)
+* Expand analysis features (SVPS, ISBPS, more parallelized computing)
+* Add atlases for ROIs (AAL)
+
+= Future =
+* Python version of the code

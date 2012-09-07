@@ -2,5 +2,11 @@ This is the README file for the FUNPSY (FUNctional magnetic resonant imaging Pha
 toolbox, a MATLAB(TM) toolbox that uses phase synchronization to extract functional patterns from 
 brain time series.
 
-Since the paper explaining the novel method is under revision, the download is available only for 
-few close collaborators. If you want to join us, please email enrico.glerean [at] aalto.fi.
+For an extensive explanation of the method, please refer to the paper:
+
+Glerean, E., Salmi, J., Lahnakoski, J.M., Jääskeläinen, I.P., Sams, M. (2012). Functional Magnetic Resonance Imaging Phase Synchronization as a Measure of Dynamic Functional Connectivity. Brain connectivity. doi:10.1089/brain.2011.0068
+
+
+Please install the toolbox from a terminal with:
+
+svn checkout https://funpsy.googlecode.com/svn/trunk/ funpsy

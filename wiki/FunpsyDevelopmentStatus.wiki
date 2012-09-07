@@ -1,8 +1,10 @@
 = Status of current development =
 
-Working code to generate IPS, SBPS with optimum filtering and complete data managing (last updated July 2012)
+Working code to generate IPS, SBPS with optimum filtering and complete data managing (last updated July 2012).
 
-== Next in the pipeline (ETA August 2012) ==
+The zip file contains the previous stable version, while the source contains the most up to date version of the code. We recommend using the source code (e.g. using svn checkout)
+
+== Next in the pipeline (ETA September 2012) ==
 
   * Add extensive documentation (as PDF)
   * Expand analysis features (SVPS, ISBPS, more parallelized computing)

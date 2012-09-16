@@ -1,27 +1,30 @@
-function psess = funpsy_stats(cfg)
+function [psess] = funpsy_stats(cfg)
+
 %FUNPSY_STATS Computes the statistical values for DFPS, IFPS, IPS or SVPS
-%       psess=funpsy_stats(cfg)
-%       'cfg' is a struct with mandatory and optional fields
-%       MANDATORY:
-%           cfg.sessionfile = string with the path of the sessionfile
-%           cfg.statstype='dfps';
-%               statistics for DFPS, results saved in out.dfps_stats
+%   psess = funpsy_stats(cfg)
+%   'cfg' is a struct with mandatory and optional fields
+%   MANDATORY:
+%       cfg.sessionfile = string with the path of the sessionfile
+%       cfg.statstype='sbps';
+%           statistics for SBPS, results saved in out.sbps_stats
+%   
+%       cfg.statstype='isbps';
+%           statistics for ISBPS, results saved in out.isbps_stats
 %
-%           cfg.statstype='ifps';
-%               statistics for IFPS, results saved in out.ifps_stats
-%
-%           cfg.statstype='svps';
-%               statistics for SVPS, results saved in out.svps_stats
+%       cfg.statstype='svps';
+%           statistics for SVPS, results saved in out.svps_stats // NOT YET IMPLEMENTED
 % 
-%           cfg.statstype='ips';
-%               statictics for IPS, results saved in out.ips_stats
-%       OPTIONAL:
-%           cfg.nonparam=1;     
-%               recommended. If 0 uses parametric tests. 
-%           cfg.parallel = 1;   
-%               Experimental feature - uses parallel computing
-%           cfg.perm=1000;     
-%               for each ROI pair, does a non parametric test
+%       cfg.statstype='ips';
+%           statictics for IPS, results saved in out.ips_stats
+%   OPTIONAL:
+%       cfg.nonparam = 1 ;     
+%           recommended. If 0 uses parametric tests. Right now only nonparam is implemented.
+%       cfg.parallel = 1;   
+%           Experimental feature - uses parallel computing
+%       cfg.perm=1000;     
+%           for each ROI pair, does a non parametric test.
+%       cfg.reduced = p;
+%           uses a reduced set of ROIs. P is the percentage of rois to use taken from the maximum positive and maximum negative of the temporal averaged data
 
 %% COPYRIGHT NOTICE
 %  IF YOU EDIT OR REUSE PART OF THE BELOW PLEASE DO NOT RE-DISTRIBUTE WITHOUT NOTIFYING THE ORIGINAL AUTHOR
@@ -44,7 +47,7 @@ optionalfields=[
     {'nonparam'}
     {'parallel'}
     {'perm'}
-    {'parallel'}
+    {'reduced'}
 ];    
 
 defaults= [
@@ -86,17 +89,18 @@ mkdir([psess.outpath 'stats/']);
 
 cfg.randthres=3;    % pick a random time point at least 3 volumes away
 
-flag=-1; % dfps=1 ifps=2 svps=3 ips=4
+flag=-1; % sbps=1 isbps=2 svps=3 ips=4
 switch cfg.statstype
-    case 'dfps'
+    case 'sbps'
         flag=1;
-        disp([processID 'Statistics for DFPS']);
-    case 'ifps'
+        disp([processID 'Statistics for SBPS']);
+    case 'isbps'
         flag=2;
-        disp([processID 'Statistics for IFPS']);
+        disp([processID 'Statistics for ISBPS']);
     case 'svps'
         flag=3;
         disp([processID 'Statistics for SVPS']);
+        error(['Feature not yet available'])
     case 'ips'
         flag=4;
         disp([processID 'Statistics for IPS']);
@@ -106,7 +110,6 @@ end
 
 %% check if we are going to use PPC
 
-
 useppc=0;
 if(isfield(cfg,'ppc'))
     useppc=cfg.ppc;
@@ -114,31 +117,83 @@ if(isfield(cfg,'ppc'))
 end
 
 
-%% DFPS
+%%SBPS
 
 if(flag == 1)
-	R=length(psess.rois);
-	edges=zeros((R*R-R)/2,2);
-	counter=1;
-	for r=1:R
-		for c=r+1:R
-			edges(counter,:)=[ r c];
-			counter=counter+1;
-		end
-	end
-    mkdir([psess.outpath 'stats/dfps/']);
-    mkdir([psess.outpath 'stats/dfps/perm/']);
-    tempfolder=[psess.outpath 'stats/dfps/perm/'];
-    if(cfg.parallel == 1)
-        disp([processID 'computing permutation using distributed computing on ' num2str(size(edges,1)) ' permutations']);
-        
-        parfor perm=1:size(edges,1)
-            parpermdfps2(edges,perm,tempfolder,psess,cfg.perm)
+    perc=cfg.reduced;
+    if(perc>100) perc=100;end
+    if(perc > 0 && perc~=100)
+        % load avgsbps / should compute it if it is not there yet. Add a check
+        load([psess.outpath 'results/avgsbps.mat']); % variable avgsbps, zeros on main diagonal, simmetric adj matrix
+        % ---add here the removal of the blacklisted nodes
+        R=size(avgsbps,1);
+        triuIDs=find(triu(ones(R),1)==1);
+        th=prctile(avgsbps(triuIDs),[perc 100-perc]);
+        avgsbps(find(avgsbps<=th(1)))=1;
+        avgsbps(find(avgsbps>=th(2)))=1;
+        avgsbps(find(avgsbps~=1))=0;
+        counter=1;
+        edges=[];
+    	for r=1:R
+	    	for c=r+1:R
+	    	    if(avgsbps(r,c)==1)
+    		    	edges(counter,:)=[ r c];
+	    		    counter=counter+1;
+	    		end
+		    end    
+	    end
+	    % should test that these folders are not already created
+	    mkdir([psess.outpath 'stats/sbps/']);
+        mkdir([psess.outpath 'stats/sbps/perm/']);
+        tempfolder=[psess.outpath 'stats/sbps/perm/'];
+        if(cfg.parallel == 1)
+            disp([processID 'computing permutation using distributed computing on ' num2str(size(edges,1)) ' permutations']);
+            % Do it for all edges
+            %cfg.perm=10;
+            edgeout=zeros(psess.T*cfg.perm,size(edges,1));
+            parfor perm=1:size(edges,1)
+                edgeout(:,perm)=funpsy_parpermsbps(edges,perm,tempfolder,psess,cfg.perm)
+            end
         end
+        %edgeout=reshape(edgeout,psess.T,[]);
+        
+        stats.l.p_info=[.05 .01 .005 .001 .0005 .0001];
+        stats.r.p_info=[.95 .99 .995 .999 .9995 .9999];
+        
+        stats.l.th=prctile(edgeout(:),100*stats.l.p_info);
+        stats.r.th=prctile(edgeout(:),100*stats.r.p_info);
+        
+        stats.l.th_FDR=min(prctile(edgeout',100*stats.l.p_info),[],2);
+	stats.l.th_FDR=stats.l.th_FDR';
+	stats.r.th_FDR=max(prctile(edgeout',100*stats.r.p_info),[],2)
+	stats.r.th_FDR=stats.r.th_FDR';
+
+        stats.l.th_FWE=prctile(min(edgeout,[],2),100*stats.l.p_info);
+        stats.r.th_FWE=prctile(max(edgeout,[],2),100*stats.r.p_info);
+
+        ma=mean(reshape(edgeout,psess.T,[]));
+        ma=reshape(ma,cfg.perm,[]);
+
+        stats.l.avgth=prctile(ma(:),100*stats.l.p_info);
+        stats.r.avgth=prctile(ma(:),100*stats.r.p_info);
+
+        stats.l.avgth_FDR=min(prctile(ma',100*stats.l.p_info),[],2);        
+        stats.l.avgth_FDR=stats.l.avgth_FDR';
+	stats.r.avgth_FDR=max(prctile(ma',100*stats.r.p_info),[],2);
+        stats.r.avgth_FDR=stats.r.avgth_FDR';
+
+        stats.l.avgth_FWE=prctile(min(ma,[],2),100*stats.l.p_info);
+        stats.r.avgth_FWE=prctile(max(ma,[],2),100*stats.r.p_info);
+        
+        psess.stats.sbps.stats=stats;
+        psess.history.stats.sbps=1;
+        
+    else
+        % add here test for all rois
     end
 end
 
-%% IFPS
+%% ISBPS
 
 %% SVPS
 

@@ -68,6 +68,7 @@ end
 outpath=[psess.outpath 'results/sbps/'];
 disp('Creating folder')
 mkdir(outpath)
+% to add here a check if matlabpool is open
 parfor roi=1:(R-1)
 	funpsy_parsbps(roi,outpath,psess,data)
 end

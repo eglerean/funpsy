@@ -35,7 +35,7 @@ funpsy_testROIdata(psess,processID);
 % Did we compute SBPS already? Should we recompute it?
 isinit=0;
 if(isfield(psess.history,'sbps'))
-    if(psess.history.svps == 1)
+    if(psess.history.sbps == 1)
         isinit=1;
     end
 end       

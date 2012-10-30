@@ -16,6 +16,8 @@ function [psess] = funpsy_stats(cfg)
 % 
 %       cfg.statstype='ips';
 %           statictics for IPS, results saved in out.ips_stats
+%	cfg.statstype='sbc';
+%	    statistics for Seed Based Correlation
 %   OPTIONAL:
 %       cfg.nonparam = 1 ;     
 %           recommended. If 0 uses parametric tests. Right now only nonparam is implemented.
@@ -104,6 +106,9 @@ switch cfg.statstype
     case 'ips'
         flag=4;
         disp([processID 'Statistics for IPS']);
+    case 'sbc'
+		flag=5;
+		disp([processID 'Statistics for SBC']);
     otherwise
         error([processID 'Parameter cfg.statstype = ' cfg.statstype ' not recognized']);
 end
@@ -135,11 +140,11 @@ if(flag == 1)
         counter=1;
         edges=[];
     	for r=1:R
-	    	for c=r+1:R
-	    	    if(avgsbps(r,c)==1)
-    		    	edges(counter,:)=[ r c];
-	    		    counter=counter+1;
-	    		end
+			for c=r+1:R
+				if(avgsbps(r,c)==1)
+					edges(counter,:)=[ r c];
+					counter=counter+1;
+				end
 		    end    
 	    end
 	    % should test that these folders are not already created
@@ -164,9 +169,9 @@ if(flag == 1)
         stats.r.th=prctile(edgeout(:),100*stats.r.p_info);
         
         stats.l.th_FDR=min(prctile(edgeout',100*stats.l.p_info),[],2);
-	stats.l.th_FDR=stats.l.th_FDR';
-	stats.r.th_FDR=max(prctile(edgeout',100*stats.r.p_info),[],2)
-	stats.r.th_FDR=stats.r.th_FDR';
+		stats.l.th_FDR=stats.l.th_FDR';
+		stats.r.th_FDR=max(prctile(edgeout',100*stats.r.p_info),[],2)
+		stats.r.th_FDR=stats.r.th_FDR';
 
         stats.l.th_FWE=prctile(min(edgeout,[],2),100*stats.l.p_info);
         stats.r.th_FWE=prctile(max(edgeout,[],2),100*stats.r.p_info);
@@ -179,7 +184,7 @@ if(flag == 1)
 
         stats.l.avgth_FDR=min(prctile(ma',100*stats.l.p_info),[],2);        
         stats.l.avgth_FDR=stats.l.avgth_FDR';
-	stats.r.avgth_FDR=max(prctile(ma',100*stats.r.p_info),[],2);
+		stats.r.avgth_FDR=max(prctile(ma',100*stats.r.p_info),[],2);
         stats.r.avgth_FDR=stats.r.avgth_FDR';
 
         stats.l.avgth_FWE=prctile(min(ma,[],2),100*stats.l.p_info);
@@ -310,6 +315,72 @@ if(flag == 4)
     pval=prctile(pdfdata(:),[95 99 99.9 99.99 99.999 99.9999 99.99999]);
     psess.stats.ips.pval=pval;
     psess.history.stats.ips=1;
+end
+
+
+%% SBC
+if(flag == 5);
+	perc=cfg.reduced;
+	if(perc>100) perc=100;end
+    if(perc > 0 && perc~=100)
+        % load avgsbpc / should compute it if it is not there yet. Add a check
+        load([psess.outpath '/results/avgsbc.mat']); % variable avgsbc, zeros on main diagonal, simmetric adj matrix
+        % ---add here the removal of the blacklisted nodes
+        R=size(avgsbc,1);
+        triuIDs=find(triu(ones(R),1)==1);
+		avgsbc(psess.blacklist,:)=0;
+		avgsbc(:,psess.blacklist)=0;
+        th=prctile(avgsbc(triuIDs),[perc 100-perc]);
+        avgsbc(find(avgsbc<=th(1)))=1;
+        avgsbc(find(avgsbc>=th(2)))=1;
+        avgsbc(find(avgsbc~=1))=0;
+        counter=1;
+        edges=[];
+		% checking the blacklist
+		deg=sum(avgsbc-eye(size(avgsbc)));
+		if(any(ismember(find(deg>0),psess.blacklist)))
+			save debug.mat
+			error('one of the strong nodes, belongs to the blacklist');
+		end
+        for r=1:R
+            for c=r+1:R
+                if(avgsbc(r,c)==1)
+                    edges(counter,:)=[ r c];
+                    counter=counter+1;
+                end
+            end
+        end
+		% should test that these folders are not already created
+        mkdir([psess.outpath 'stats/sbc/']);
+        if(cfg.parallel == 1)
+            disp([processID 'computing permutation using distributed computing on ' num2str(size(edges,1)) ' permutations']);
+            % Do it for all edges
+            %cfg.perm=10;
+            edgeout=zeros(cfg.perm,size(edges,1));
+            parfor perm=1:size(edges,1)
+                edgeout(:,perm)=funpsy_parpermsbc(edges,perm,psess,cfg.perm)
+            end
+        end
+		%save('edgeout','edgeout');
+        %edgeout=reshape(edgeout,psess.T,[]);
+		stats.l.p_info=[.05 .01 .005 .001 .0005 .0001];
+        stats.r.p_info=[.95 .99 .995 .999 .9995 .9999];
+
+        stats.l.th=prctile(edgeout(:),100*stats.l.p_info);
+        stats.r.th=prctile(edgeout(:),100*stats.r.p_info);
+
+        stats.l.th_FDR=min(prctile(edgeout',100*stats.l.p_info),[],2);
+        stats.l.th_FDR=stats.l.th_FDR';
+        stats.r.th_FDR=max(prctile(edgeout',100*stats.r.p_info),[],2)
+        stats.r.th_FDR=stats.r.th_FDR';
+
+        stats.l.th_FWE=prctile(min(edgeout,[],2),100*stats.l.p_info);
+        stats.r.th_FWE=prctile(max(edgeout,[],2),100*stats.r.p_info);
+
+        psess.stats.sbc.stats=stats;	
+        psess.history.stats.sbc=1;
+
+	end
 end
 
 

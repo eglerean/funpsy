@@ -131,13 +131,24 @@ if(flag == 1)
         % load avgsbps / should compute it if it is not there yet. Add a check
         load([psess.outpath 'results/avgsbps.mat']); % variable avgsbps, zeros on main diagonal, simmetric adj matrix
         % ---add here the removal of the blacklisted nodes
+		
         R=size(avgsbps,1);
-        triuIDs=find(triu(ones(R),1)==1);
+        avgsbps(psess.blacklist,:)=0;
+        avgsbps(:,psess.blacklist)=0;
+		triuIDs=find(triu(ones(R),1)==1);
         th=prctile(avgsbps(triuIDs),[perc 100-perc]);
         avgsbps(find(avgsbps<=th(1)))=1;
         avgsbps(find(avgsbps>=th(2)))=1;
         avgsbps(find(avgsbps~=1))=0;
         counter=1;
+		
+		% checking the blacklist
+        deg=sum(avgsbps-eye(size(avgsbps)));
+        if(any(ismember(find(deg>0),psess.blacklist)))
+            save debug.mat
+            error('one of the strong nodes, belongs to the blacklist');
+        end
+
         edges=[];
     	for r=1:R
 			for c=r+1:R

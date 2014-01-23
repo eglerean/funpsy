@@ -1,14 +1,14 @@
 = Status of current development =
 
-Working code to generate IPS, SBPS with optimum filtering and complete data managing (last updated October 2012).
+Working code to generate IPS, SBPS with optimum filtering and complete data managing. Added regions of interests based on anatomical atlases (AAL and HarvardOxford) to be used with the toolbox for the connectivity part (last updated Jan 2014).
 
-The zip file has been deleted since it contained obsolete version of the code. There is only support for svn check out right now. If you are not familiar with svn please check http://svnbook.red-bean.com/
+Note: The zip file has been deleted since it contained obsolete version of the code. There is only support for svn check out right now. If you are not familiar with svn please check http://svnbook.red-bean.com/
 
-== Next in the pipeline (ETA May 2013) ==
+== Next in the pipeline ==
 
   * Add extensive documentation (as PDF)
   * Expand analysis features (SVPS, ISBPS, more parallelized computing)
-  * Add atlases for ROIs (AAL, UCLA, Harvard-Oxford)
+  * Add more atlases for ROIs (UCLA, CC200 and CC400)
 
 == Future ==
 Python version of the code (send an email if you want to help!)

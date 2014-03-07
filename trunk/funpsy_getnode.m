@@ -24,10 +24,11 @@ end
 
 ts=ones(psess.T,R);
 for r=1:R
+	disp(num2str(r));
 	if(r>noi)
 		break
 	end
-	load([psess.results.sbps num2str(r))]; % sbpsts 
+	load([psess.results.sbps num2str(r)]); % sbpsts 
 	if(r<noi)
 		ts(:,r)=sbpsts(:,noi-r);
 	end

@@ -18,7 +18,7 @@ if(noi<1 || noi>R)
 	error(['Node of interest is out of range 1-' num2str(R)])
 end
 
-if(ismember(noi,psess.blacklsit))
+if(ismember(noi,psess.blacklist))
 	error(['You do not want to use a node that is on the blacklist']);
 end
 

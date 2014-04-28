@@ -125,8 +125,8 @@ aal_cerebellum=[91:116];
 
 aal_cortex=1:116;
 
-aal_cortex=setdiff(aal_cortex,aal_subcortex);
-aal_cortex=setdiff(aal_cortex,aal_cerebellum);
+aal_cortex=setdiff(aal_cortex,aal_subcortex,'stable');
+aal_cortex=setdiff(aal_cortex,aal_cerebellum,'stable');
 
 save aal_labels
 

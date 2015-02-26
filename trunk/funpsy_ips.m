@@ -1,11 +1,13 @@
 function psess=funpsy_ips(cfg)
 %FUNPSY_IPS Computes functional intersubject phase synchrony between each pair of seeds/rois
 %       psess=funpsy_ips(cfg) stores the results in out.results.ips
-%          cfg.sessionfile=string with the path of the sessionfile
-%          cfg.rois=string array with a list of ROIs
+%          	cfg.sessionfile=string with the path of the sessionfile
+%          	cfg.rois=string array with a list of ROIs
 %       OPTIONAL:
-%          cfg.overwrite=0
+%          	cfg.overwrite=0
 %               if 1, the previously done IPS data will be overwritten
+%			cfg.useppc=0
+%				if 0, it computes phase synchrony across subjects. By default it is set to one, i.e. use pairwise phase consistency (unbiased)
 
 %% COPYRIGHT NOTICE
 %  IF YOU EDIT OR REUSE PART OF THE BELOW PLEASE DO NOT RE-DISTRIBUTE WITHOUT NOTIFYING THE ORIGINAL AUTHOR
@@ -48,7 +50,7 @@ if(isinit==1 && overwrite == 0)
     return
 end
 
-useppc=0;
+useppc=1; % by default it uses ppc
 if(isfield(cfg,'ppc'))
     useppc=cfg.ppc;
     fprintf('%s\n',[processID 'Using PPC measure.']);

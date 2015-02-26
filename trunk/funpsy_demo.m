@@ -58,6 +58,10 @@ cfg.sessionfile=sessionfile;
 % cfg.compute_spectrum=1;       % overrides session settings
 out = funpsy_makedata(cfg);     % filters, compute masks and creates the analytic signal
 
+%% Whole brain analysis of intersubject synch.
+cfg=[];
+cfg.sessionfile=sessionfile;
+out = funpsy_ips(cfg);          % compute whole brain intersubject phase synchrony
 
 %% Pairwise ROIs analysis
 cfg=[];
@@ -74,10 +78,6 @@ out = funpsy_sbps(cfg);         % takes a list of seeds/rois and computes full d
                                 % between each pair of seeds/rois.
                                 % results stored in out.results.dfps
 
-%% Whole brain analysis
-cfg=[];
-cfg.sessionfile=sessionfile;
-out = funpsy_ips(cfg);          % compute whole brain intersubject phase synchrony
                                 % results stored in out.results.ips
                          
 %% Statistics

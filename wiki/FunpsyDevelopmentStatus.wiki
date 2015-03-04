@@ -1,13 +1,11 @@
 = Status of current development =
 
-Working code to generate IPS, SBPS with optimum filtering and complete data managing. Added regions of interests based on anatomical atlases (AAL and HarvardOxford) to be used with the toolbox for the connectivity part (last updated Jan 2014).
-
-Note: The zip file has been deleted since it contained obsolete version of the code. There is only support for svn check out right now. If you are not familiar with svn please check http://svnbook.red-bean.com/
+Added more atlases for connectivity analysis. Currently working on a function for group comparisons (i.e. is group A more in-synch than group B) and model based analysis (general linear model of time series of synchronization). 
+A small "how to" has been added to wiki pages.
 
 == Next in the pipeline ==
 
-  * Add extensive documentation (as PDF)
-  * Expand analysis features (SVPS, ISBPS, more parallelized computing)
+  * Parallel computing and optimizing permutation tests
   * Add more atlases for ROIs (UCLA, CC200 and CC400)
 
 == Future ==

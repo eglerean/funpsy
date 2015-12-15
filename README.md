@@ -109,6 +109,7 @@ Add code here
 Added more atlases for connectivity analysis. Currently working on a function for group comparisons (i.e. is group A more in-synch than group B) and model based analysis (general linear model of time series of synchronization). A small "how to" has been added to wiki pages.
 
 ### Next in the pipeline
+- SVPS: a seed-voxel approach, i.e. connectivity from a given seed to the rest of the brain. Bits of code for this are already committed but the feature is not ready yet.
 - Parallel computing and optimizing permutation tests
 - Add more atlases for ROIs (UCLA, CC200 and CC400)
 

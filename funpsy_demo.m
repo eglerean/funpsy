@@ -37,7 +37,7 @@ cfg.F=[0.025 0.04 0.07 0.09];
 cfg.DEV=[0.05 0.01 0.05];
 
 % BRAIN MASKS // masks that the software will use
-cfg.coregistered_mask='/proj/braindata2/neurocinematics/HarvardOxford/MNI152_T1_2mm_brain_mask.nii';
+cfg.coregistered_mask='./atlases/masks/MNI152_T1_2mm_brain_mask.nii';
 cfg.compute_group_mask = 1;     % if = 1, it computes a group mask based on the power of each voxel
 cfg.compute_spectrum = 0;       % if = 1, it computes a group frequency spectrum for each voxel
 
@@ -62,24 +62,38 @@ out = funpsy_makedata(cfg);     % filters, compute masks and creates the analyti
 cfg=[];
 cfg.sessionfile=sessionfile;
 out = funpsy_ips(cfg);          % compute whole brain intersubject phase synchrony
+                                % results stored in out.results.ips
 
 %% Pairwise ROIs analysis
 cfg=[];
+load atlases/aal_2mm_rois.mat
 cfg.sessionfile=sessionfile;
 cfg.rois=rois;
-out = funpsy_makeroidata(cfg);  % extract first principal component for each roi
+cfg.usemean = 1; 				% set usemean =1 if you want to just do a mean of the voxels in the region. Default is usemean =0, which uses first principal component
+out = funpsy_makeroidata(cfg);  % extract roi time series based on the 1st principal component or the mean
 
 % SBPS (Seed Based Phase Synchrony)
 cfg=[];
 cfg.sessionfile=sessionfile;
-%cfg.rois=rois;                  % a list of ROIs (at least 2!)
-cfg.ppc=0;
+%cfg.useppc=1;					% Pairwise phase consitency is not implemented for SBPS since it needs testing
 out = funpsy_sbps(cfg);         % takes a list of seeds/rois and computes full differential functional phase synchrony
                                 % between each pair of seeds/rois.
-                                % results stored in out.results.dfps
+                                % results stored in out.results.sbps
 
-                                % results stored in out.results.ips
-                         
+
+% ISBPS (Intersubject Seed Based Phase Synchrony)
+cfg=[];
+cfg.sessionfile=sessionfile;
+%cfg.useppc=1;                  % Pairwise phase consitency is not implemented for ISBPS since it needs testing
+out = funpsy_isbps(cfg);       	% takes a list of seeds/rois and computes full differential functional phase synchrony
+                                % between each pair of seeds/rois.
+                                % results stored in out.results.isbps
+
+
+error('stop')
+ 
+%%% Code for statistics is currently consuming too many resources. It needs a bit of work. See the readme file.
+                        
 %% Statistics
 % SBPS (pairwise ROI analysis)
 cfg=[];
@@ -89,8 +103,8 @@ cfg.parallel = 1;   % Experimental feature - uses parallel computing
 cfg.perm=1000;     % for each ROI pair, does a non parametric test
                     % NOTE: the rois are already specified in data creation
                     % To modify them you need to rerun the analysis
-cfg.statstype='dfps';
-out = funpsy_stats(cfg);    % results in out.dfps_stats
+cfg.statstype='sbps';
+out = funpsy_stats(cfg);    % results in out.sbps_stats
 
 
 % IPS (Whole)

@@ -12,13 +12,22 @@ Glerean, E., Salmi, J., Lahnakoski, J.M., Jääskeläinen, I.P., Sams, M. (2012)
 
 ## How it has been used
 See example of the tool in action in these papers:
-- Nummenmaa L., Smirnov D., Lahnakoski J., Glerean E., Jääskeläinen I.P., Sams M., Hari R. (2013)  Mental Action Simulation Synchronizes Action-Observation Circuits Across Individuals. Journal of Neuroscience doi:10.1523/JNEUROSCI.0352-13.2014 
-- Nummenmaa L., Saarimäki H.; Glerean E.; Gotsopoulos A.; Jääskeläinen I.P.; Hari R.; Sams M. (2014) Emotional Speech Synchronizes Brains Across Listeners And Engages Large-Scale Dynamic Brain Networks. Neuroimage doi:10.1016/j.neuroimage.2014.07.063 
+- Nummenmaa L., Smirnov D., Lahnakoski J., Glerean E., Jääskeläinen I.P., Sams M., Hari R. (2013)  Mental Action Simulation Synchronizes Action-Observation Circuits Across Individuals. Journal of Neuroscience doi:10.1523/JNEUROSCI.0352-13.2014 http://www.jneurosci.org/content/34/3/748.full
+- Nummenmaa L., Saarimäki H.; Glerean E.; Gotsopoulos A.; Jääskeläinen I.P.; Hari R.; Sams M. (2014) Emotional Speech Synchronizes Brains Across Listeners And Engages Large-Scale Dynamic Brain Networks. Neuroimage doi:10.1016/j.neuroimage.2014.07.063 http://www.sciencedirect.com/science/article/pii/S1053811914006466
+
+## Corrections
+Typo: the frequency band in Nummenmaa 2014 JNeurosci is written as 0.30–0.95 Hz while it should have been 0.030–0.095 Hz.
 
 ## Documentation
 
-### Installation
-The code is managed with GIT and can be downloaded at https://github.com/eglerean/funpsy
+### Installation and requirements
+The code is managed with GIT and can be downloaded at https://github.com/eglerean/funpsy . To download it, open a terminal and type
+
+git clone https://github.com/eglerean/funpsy
+
+Then make sure your matlab path sees the funpsy folder and its subfolders.
+
+Please make sure you also have the NIFTI tools for matlab installed: http://www.mathworks.com/matlabcentral/fileexchange/8797-tools-for-nifti-and-analyze-image
 
 ### How to prepare your data
 Funpsy currently works with data from experiments were all subjects are undergoing the same stimulation in sync (e.g. watching a feature film). It is an extension of methods such as intersubject correlation (https://code.google.com/p/isc-toolbox/) with the added temporal dimension. The phase synchrony method has however also been used successfully at rest with real data and models (see for example http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1004100).

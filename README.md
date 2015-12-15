@@ -19,6 +19,7 @@ See example of the tool in action in these papers:
 Typo: the frequency band in Nummenmaa 2014 JNeurosci is written as 0.30–0.95 Hz while it should have been 0.030–0.095 Hz.
 
 ## Documentation
+The documentation present on this page is minimal. **The toolbox does not provide a graphical interface**. The best way to learn how to use it is to read the code and comments in funpsy_demo.m and re-run same commands with your own data.
 
 ### Installation and requirements
 The code is managed with GIT and can be downloaded at https://github.com/eglerean/funpsy . To download it, open a terminal and type

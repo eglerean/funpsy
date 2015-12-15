@@ -57,6 +57,13 @@ funpsy_isbps
 #### How to prepare your ROIs
 funpsy_makerois
 
+### Output formats
+A) IPS: results are stored in the subfolder 'results' of the specified output folder. The IPS is stored in ips.mat which is a 4D matrix with first three dimension equal to the x, y, z dimensions of the subjects. Fourth dimension is time (number of time points). Each voxel stores values of synchronization (between -1 and 1).
+
+B) SBPS: results are stored in subfolder 'results/sbps'. Files are named as numbers equivalent to the ROI id. File 1.mat will contain all the link time-series from ROI 1 to all other N-1 rois (i.e. a total of N-1 connectivity time-series). File 2.mat will contain N-2 link time series (from roi 2 to roi 3, 4, ..., N). The time series of connectivity between 1 and 2 is already stored in 1.mat hence it is not stored in 2.mat.
+
+C) ISBPS: see SBPS, subfolder is 'results/isbps'
+
 #### Statistics
 There are three ways of computing stats:
 A) data driven approach
@@ -69,19 +76,22 @@ Case B: for the model based approach (which we have used in our J Neurosci and N
 
 Case C: similar to case B but here we want to compare groups (e.g. controls vs drug). This is under development and paper not yet submitted. Code will be available later. 
 
+##### Statistics - Controlling for multiple comparisons
+*This section is partly speculative based on my experience and opinions. Feedback and discussion are welcome!*
+Multiple comparisons are happening in space (many voxels or links tested) and -only for case A- also in time. Case B and C are getting rid of time (ie our glm results will produce a map of voxels or a network of links whose synchrony covaries with the model). For case A: Funpsy_stats provides spatial FDR correction based on an approach similar to the max statistics (Nichols 2002) but it doesn't take in consideration the number of time points. Ideally, one would have to divide the desired p value threshold by the number of time points. In reality, the synchronisation time series are autocorrelatied, i.e. it is enough to divide by the estimated number of independent time points (degrees of freedom) which is smaller than the total number of time points. One can estimate this parametrically (see appendix B of our paper Alluri 2012 Neuroimage). A function that does this for you is here in our lab's repository:  https://git.becs.aalto.fi/bml/bramila/blob/master/bramila_autocorr.m).
 
-### Output formats
-A) IPS: results are stored in the subfolder 'results' of the specified output folder. The IPS is stored in ips.mat which is a 4D matrix with first three dimension equal to the x, y, z dimensions of the subjects. Fourth dimension is time (number of time points). Each voxel stores values of synchronization (between -1 and 1).
+You now see why I find case A (data driven approach) least interesting since just the temporal length of your data is going to affect the statistical threshold. Instead of a frequentist approach, a Bayesian solution might be better suited for case A. I will implement the Bayesian approach with STAN http://mc-stan.org/, but bear in mind that you need a computational cluster to do this since from our tests the Bayesian way is much slower computationally. 
 
-B) SBPS: results are stored in subfolder 'results/sbps'. Files are named as numbers equivalent to the ROI id. File 1.mat will contain all the link time-series from ROI 1 to all other N-1 rois (i.e. a total of N-1 connectivity time-series). File 2.mat will contain N-2 link time series (from roi 2 to roi 3, 4, ..., N). The time series of connectivity between 1 and 2 is already stored in 1.mat hence it is not stored in 2.mat.
+Case B and C don't have the multiple comparison problem in time as they get rid of the temporal dimension. You need however to correct for multiple comparisons spatially. You can feed your p values to the Benjamin hochberg FDR function (see matlab mafdr). This is a bit strict since it doesn't take into account spatial autocorrelation (I.e. The number of independent comparisons is smaller than the number of tested voxels). Cluster correcting the results is a better option. I am planning to implement a permutation based cluster correction approach, but it's not a priority at the moment. If you run your glm with standard packages (fsl, spm etc) you can use what is provided there. 
 
-C) ISBPS: see SBPS, subfolder is 'results/isbps'
+A different story is for the network approach. For this case you can use the network based statistics https://sites.google.com/site/bctnet/comparison/nbs however I found it a bit too lenient when the number of nodes (and links) increases. In Nummenmaa 2014 Neuroimage we had a network of ~13 million links, the NBS approach was giving way too many significant links. On the other hand, the BHFDR approach becomes too strict since you need to have a p value of 10e-7 for the strongest link (almost nothing survived). In the end I used a similar approach as used in GWAS studies, with the so called positive FDR (pFDR http://www.pnas.org/content/100/16/9440.full, a somewhat Bayesian interpretation of FDR: https://projecteuclid.org/euclid.aos/1074290335). For that, we decided to set a q value of 10% rather than the usual 5% as also done in genetics. I can help on this bit if you are going to deal with dense networks with millions of links.
 
 
-# Group based analysis
+
+### Group based analysis
 Code under development, paper in preparation.
 
-# Model based analysis (GLM)
+### Model based analysis (GLM)
 Add code here
 
 ## Development status

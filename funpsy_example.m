@@ -62,7 +62,7 @@ plot(ipsts(:,2),'r');
 load([psess.results.sbps '/' num2str(roi1)]); %variable sbpsts
 sbps_r1r2=sbpsts(:,roi2-roi1);
 plot(sbps_r1r2,'k')
-
+TMAX=300;
 % load and plot ISBPS dynamic connectivity roi1 roi2
 load([psess.results.isbps '/' num2str(roi1)]); %variable sbpsts
 isbps_r1r2=isbpsts(:,roi2-roi1);
@@ -71,7 +71,7 @@ title('IPS, SBPS and SBPS time series for the two selected ROIs')
 xlabel('Time [TR]')
 ylabel('Synchronization')
 legend([{[psess.rois(roi1).label ' IPS'],[psess.rois(roi2).label ' IPS'],'SBPS','ISBPS'}],'Interpreter','none' )
-axis([0 250 -.2 1])
+axis([0 TMAX -.2 1])
 
 subplot(3,1,2)
 imagesc(allrois(:,:,1)',[-pi pi])
@@ -83,7 +83,7 @@ title(['Individuals'' phase time series' psess.rois(roi1).label],'Interpreter','
 
 xlabel('Time [TR]')
 ylabel('Subject ID')
-axis([0 250 .5 16.5])
+axis([0 TMAX .5 16.5])
 
 subplot(3,1,3)
 imagesc(allrois(:,:,2)',[-pi pi])
@@ -95,9 +95,9 @@ set(h,'Ticklabels',{'-\pi','-\pi/2', '0', '\pi/2', '\pi'})
 title(['Individuals'' phase time series' psess.rois(roi2).label],'Interpreter','none')
 xlabel('Time [TR]')
 ylabel('Subject ID')
-axis([0 250 .5 16.5])
+axis([0 TMAX .5 16.5])
 
-set(gcf,'units','normalized','outerposition',[0 0 1 1]*0.75)
+set(gcf,'units','normalized','outerposition',[0 0 1 1]/2)
 
 saveas(gcf,'DemoResults.png')
 

@@ -1,6 +1,6 @@
 function [psess] = funpsy_stats(cfg)
 
-%FUNPSY_STATS Computes the statistical values for DFPS, IFPS, IPS or SVPS
+%FUNPSY_STATS Computes the statistical values for SBPS, ISBPS, IPS or SVPS
 %   psess = funpsy_stats(cfg)
 %   'cfg' is a struct with mandatory and optional fields
 %   MANDATORY:

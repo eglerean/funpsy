@@ -1,7 +1,7 @@
 function psess=funpsy_sbps(cfg)
 
 %FUNPSY_SBPS Takes a list of seeds/ROIs and computes full differential phase synchrony between each pair of seeds/ROIs
-%	psess=funpsy_dfps(cfg) stores the results in out.results.dfps
+%	psess=funpsy_sbps(cfg) stores the results in psess.results.sbps
 %	'cfg' is a struct with mandatory and optional fields
 %	    cfg.sessionfile=string with the path of the sessionfile
 %	    cfg.rois=string array with a list of ROIs, at least 2 needed

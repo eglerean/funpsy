@@ -70,6 +70,13 @@ funpsy_testGroupmask(psess,processID);
 %% cfg.sphere
 % add here
 
+%% cfg.usemean
+usemean=0;
+if(isfield(cfg,'usemean'))
+	usemean=cfg.usemean;
+end
+
+
 %% cfg.rois
 if(isfield(cfg,'rois'))
     rois=cfg.rois;
@@ -122,12 +129,16 @@ for s=1:psess.Nsubj
         end    
         
         if(M > 1)
-            % run PCA
-            [roits,dpc,upc,vpc,perc] = funpsy_princomp(ts);
-            if(perc(1)<0.5)
-                warning([processID 'The first pca explains ' num2str(round(perc(1)*100)) '% of the variance. You might want to reduce the size of ROI #' num2str(r)]);
-            end
-        else
+			if(usemean == 0 )
+				% run PCA
+				[roits,dpc,upc,vpc,perc] = funpsy_princomp(ts);
+				if(perc(1)<0.5)
+					warning([processID 'The first pca explains ' num2str(round(perc(1)*100)) '% of the variance. You might want to reduce the size of ROI #' num2str(r)]);
+				end
+			else
+				roits=mean(ts,2);
+			end
+		else
             roits=ts;
         end
         

@@ -56,14 +56,17 @@ if(isfield(cfg,'ppc'))
     fprintf('%s\n',[processID 'Using PPC measure.']);
 end
 
-%%% TO BE REMOVED
-psess.datasize=[91 109 91 psess.T];
-%%%
 
 %% Processing
 
 load(psess.groupmask);  %the variable is groupmask
-sz=psess.datasize;
+
+if(isfield(psess,'datasize'))
+	sz=psess.datasize;
+else
+	error('Missing datasize on the psess variable, this should not happen...');
+end
+
 ips=zeros(sz(1),sz(2),sz(3),psess.T);
 disp([processID 'computing time:']);
 for t=1:psess.T;

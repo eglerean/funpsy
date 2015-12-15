@@ -44,7 +44,8 @@ The following three measures are computed:
 - Seed Based Phase Synchronization (SBPS): a bi-variate measure of time-varying synchronization (i.e. a measure of dynamic functional connectivity at group level).
 - Intersubject Seed Based Phase Synchronization (ISBPS): similar to the previous one, but with the added constraint that also each seed has to be synchronous across subjects (still at an experimental stage since it is not straightforward to compare this to other correlation based methods)
 
-
+The script funpsy_example.m will generate some visualization after all IPS/SBPS/ISBPS time series are computed.
+![Result from funpsy_example.m](https://raw.githubusercontent.com/eglerean/funpsy/master/DemoResults.png)
 
 
 ### To-dos
